@@ -124,7 +124,7 @@ public class SDES {
      */
     public boolean[] lh(boolean[] inp) {
 
-        return Arrays.copyOfRange(inp, inp.length / 2, inp.length);
+        return Arrays.copyOfRange(inp, 0, inp.length / 2);
 
     }
 
@@ -135,11 +135,10 @@ public class SDES {
      * Right half of x, R(x)
      */
     public boolean[] rh(boolean[] inp) {
-
-        return Arrays.copyOfRange(inp, 0, inp.length / 2);
+        
+        return Arrays.copyOfRange(inp, inp.length / 2, inp.length);
 
     }
-
     /**
      * @author Daniel Haluszka
      * @param x First of the two bit array operands of the XOR operation.
