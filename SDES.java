@@ -57,7 +57,7 @@ public class SDES {
     public void getKey10(java.util.Scanner scanner) {
 
         String input;
-        int count = 0; //will increment each time a index of the key is set
+        int count = 0; //will increment each time an index of the key is set
 
         //loop until all 10 indexes of the key have been set
         while (count < 10) {
@@ -74,14 +74,14 @@ public class SDES {
                 //convert input string to char array for easier access
                 char[] inputArr = input.toCharArray();
 
-                //loop backwards through each value of input, setting each index of key to the appropriate value, incrementing count after each loop
+                //loop through each value of input, setting each index of key to the appropriate value, incrementing count after each loop
                 for (int i = 0; i < 10; i++) {
 
-                    if (inputArr[9-i] == '1') {
+                    if (inputArr[i] == '1') {
 
                         this.key[i] = true;
 
-                    } else if (inputArr[9-i] == '0') {
+                    } else if (inputArr[i] == '0') {
 
                         this.key[i] = false;
 
@@ -93,7 +93,7 @@ public class SDES {
                         break;
 
                     }
-
+                    
                     count++;
 
                 }
@@ -193,15 +193,15 @@ public class SDES {
         //loop through each index of the resulting bit array
         for (int i = 0; i < newLength; i++) {
 
-            //if we're working in the right half of the result, set the current index to the corresponding index of y
-            if (i < y.length) {
+            //if we're working in the left half of the result, set the current index to the corresponding index of x
+            if (i < x.length) {
 
-                concat[i] = y[i];
+                concat[i] = x[i];
 
-            } else { //if we're working in the left half of the result, set the current index to the corresponding index of x
-                //(which is found by offsetting i by the length of y, or the number of indexes that have already been traversed)
+            } else { //if we're working in the right half of the result, set the current index to the corresponding index of y
+                //(which is found by offsetting i by the length of x, or the number of indexes that have already been traversed)
 
-                concat[i] = x[i - y.length];
+                concat[i] = y[i - x.length];
 
             }
 
@@ -229,10 +229,10 @@ public class SDES {
 
         byte result = 0;
 
-        //loop through each index of the input, adding the appropriate power of two (which is stored in i) to the result
+        //loop backwards through each index of the input, adding the appropriate power of two (which is stored in i) to the result
         for (int i = 0; i < inp.length; i++) {
 
-            if (inp[i] == true) {
+            if (inp[(inp.length - 1) - i] == true) {
 
                 result += Math.pow(2, i);
 
@@ -273,7 +273,7 @@ public class SDES {
 
                 //if the last bit of the remainder is one, set the respective bit in the resulting bit array
                 //(which is kept track of with i) to 1, otherwise leave 0
-                result[i] = true;
+                result[(result.length - 1) - i] = true;
 
             }
 
