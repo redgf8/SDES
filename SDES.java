@@ -284,5 +284,368 @@ public class SDES {
         return result;
 
     }
-
+    
+	/**
+	 * @author Zachary Reynolds
+	 * x A bit array represented as booleans, true=1, false=0.
+	 * k A bit array represented as booleans, true=1, false=0.
+	 */
+	
+	public boolean[] f(boolean[] x, boolean[] k)
+	{
+		boolean[] feist = feistel(k, x);
+		boolean[] left = lh(x);
+		boolean[] right = rh(x);
+		left = xor(feist, left);
+		return concat(left, right);
+	}
+	
+	/**
+	 * @author Zachary Reynolds
+	 * x A bit array represented as booleans, true=1, false=0.
+	 * k A bit array represented as booleans, true=1, false=0.
+	 */
+	
+	public boolean[] feistel(boolean[] k, boolean[] x)
+	{
+		boolean[] a;
+		a = rh(x);
+		int[] ep = {3,0,1,2,1,2,3,0};
+		a = expPerm(a, ep);
+		a = xor(a, k);
+		boolean[] left = lh(a);
+		left = s0(left);
+		boolean[] right = rh(a);
+		right = s1(right);
+		boolean[] p = concat(left, right);
+		int[] p4 = {1,3,2,0};
+		boolean[] z = expPerm(p, p4);
+		return z;
+	}
+	
+	/**
+	 * @author Zachary Reynolds
+	 * a A bit array represented as booleans, true=1, false=0.
+	 */
+	
+	public boolean[] s0 (boolean[] a)
+	{
+		boolean[] s = new boolean[2];
+		if(a[0] == false)
+		{
+			if(a[1] == false)
+			{
+				if(a[2] == false)
+				{
+					if(a[3] == false)
+					{
+						//0000
+						s[0] = false;
+						s[1] = true;
+						return s;
+					}
+					else
+					{
+						//0001
+						s[0] = true;
+						s[1] = true;
+						return s;
+					}
+				}
+				else
+				{
+					if(a[3] == false)
+					{
+						//0010
+						s[0] = false;
+						s[1] = false;
+						return s;
+					}
+					else
+					{
+						//0011
+						s[0] = true;
+						s[1] = false;
+						return s;
+					}
+				}
+			}
+			else {
+				if(a[2] == false)
+				{
+					if(a[3] == false)
+					{
+						//0100
+						s[0] = true;
+						s[1] = true;
+						return s;
+					}
+					else
+					{
+						//0101
+						s[0] = false;
+						s[1] = true;
+						return s;
+					}
+				}
+				else
+				{
+					if(a[3] == false)
+					{
+						//0110
+						s[0] = true;
+						s[1] = false;
+						return s;
+					}
+					else
+					{
+						//0111
+						s[0] = false;
+						s[1] = false;
+						return s;
+					}
+				}
+			}
+		}
+			else
+			{
+				if(a[1] == false)
+				{
+					if(a[2] == false)
+					{
+						if(a[3] == false)
+						{
+							//1000
+							s[0] = false;
+							s[1] = false;
+							return s;
+						}
+						else
+						{
+							//1001
+							s[0] = true;
+							s[1] = true;
+							return s;
+						}
+					}
+					else
+					{
+						if(a[3] == false)
+						{
+							//1010
+							s[0] = true;
+							s[1] = false;
+							return s;
+						}
+						else
+						{
+							//1011
+							s[0] = false;
+							s[1] = true;
+							return s;
+						}
+					}
+				}
+				else {
+					if(a[2] == false)
+					{
+						if(a[3] == false)
+						{
+							//1100
+							s[0] = false;
+							s[1] = true;
+							return s;
+						}
+						else
+						{
+							//1101
+							s[0] = true;
+							s[1] = true;
+							return s;
+						}
+					}
+					else
+					{
+						if(a[3] == false)
+						{
+							//1110
+							s[0] = true;
+							s[1] = true;
+							return s;
+						}
+						else
+						{
+							//1111
+							s[0] = true;
+							s[1] = false;
+							return s;
+						}
+					}
+				}
+			}
+	}
+	
+	/**
+	 * @author Zachary Reynolds
+	 * a A bit array represented as booleans, true=1, false=0.
+	 */
+	
+	public boolean[] s1 (boolean[] b)
+	{
+		boolean[] s = new boolean[2];
+		if(b[0] == false)
+		{
+			if(b[1] == false)
+			{
+				if(b[2] == false)
+				{
+					if(b[3] == false)
+					{
+						//0000
+						s[0] = false;
+						s[1] = false;
+						return s;
+					}
+					else
+					{
+						//0001
+						s[0] = true;
+						s[1] = false;
+						return s;
+					}
+				}
+				else
+				{
+					if(b[3] == false)
+					{
+						//0010
+						s[0] = false;
+						s[1] = true;
+						return s;
+					}
+					else
+					{
+						//0011
+						s[0] = false;
+						s[1] = false;
+						return s;
+					}
+				}
+			}
+			else {
+				if(b[2] == false)
+				{
+					if(b[3] == false)
+					{
+						//0100
+						s[0] = true;
+						s[1] = false;
+						return s;
+					}
+					else
+					{
+						//0101
+						s[0] = false;
+						s[1] = true;
+						return s;
+					}
+				}
+				else
+				{
+					if(b[3] == false)
+					{
+						//0110
+						s[0] = true;
+						s[1] = true;
+						return s;
+					}
+					else
+					{
+						//0111
+						s[0] = true;
+						s[1] = true;
+						return s;
+					}
+				}
+			}
+		}
+			else
+			{
+				if(b[1] == false)
+				{
+					if(b[2] == false)
+					{
+						if(b[3] == false)
+						{
+							//1000
+							s[0] = true;
+							s[1] = true;
+							return s;
+						}
+						else
+						{
+							//1001
+							s[0] = true;
+							s[1] = false;
+							return s;
+						}
+					}
+					else
+					{
+						if(b[3] == false)
+						{
+							//1010
+							s[0] = false;
+							s[1] = false;
+							return s;
+						}
+						else
+						{
+							//1011
+							s[0] = false;
+							s[1] = true;
+							return s;
+						}
+					}
+				}
+				else {
+					if(b[2] == false)
+					{
+						if(b[3] == false)
+						{
+							//1100
+							s[0] = false;
+							s[1] = true;
+							return s;
+						}
+						else
+						{
+							//1101
+							s[0] = false;
+							s[1] = false;
+							return s;
+						}
+					}
+					else
+					{
+						if(b[3] == false)
+						{
+							//1110
+							s[0] = false;
+							s[1] = false;
+							return s;
+						}
+						else
+						{
+							//1111
+							s[0] = true;
+							s[1] = true;
+							return s;
+						}
+					}
+				}
+			}
+	}
 }
+    
+    
