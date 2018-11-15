@@ -1,12 +1,21 @@
 import java.util.Arrays;
+import java.util.BitSet;
 
 /**
- * @author Daniel Haluszka
+ * @author Daniel Haluszka, Zachary Reynolds, Dylan Chow 
  * SDES class to implement the SDES encryption/decryption algorithm.
  */
 public class SDES {
 
-    private boolean[] key;
+    private boolean[] key;    
+    private boolean [] key1 = new boolean [8];
+    private boolean [] key2 = new boolean [8];
+    private int[] epv1 = {0, 6, 8, 3, 7, 2, 9, 5}; // k1 values
+    private int[] epv2 = {7, 2, 5, 4, 9, 1, 8, 0}; // k2 values
+    private int[] ipPerm = {1, 5, 2, 0, 3, 7, 4, 6}; // IP values
+    private int[] ipInversePerm = {3, 0, 2, 4, 6, 1, 7, 5};// IP Inverse Values
+    private int[] p4Select = {1, 3, 2, 0}; // P4 Values
+    private int[] epPerm = {3, 0, 1, 2, 1, 2, 3, 0}; // EP Values
 
     /**
      * @author Daniel Haluszka
@@ -646,6 +655,169 @@ public class SDES {
 				}
 			}
 	}
+
+/**
+     * @author Dylan Chow
+     * Encrypt the given String using SDES. Each Character prodcues a byte of cipher.
+     * @return An array of bytes representing the cipher text.
+     */
+    public byte[] encrypt(String msg)
+    {
+        //Remove all spaces from string
+        //String p = msg.replaceAll("\\s","");
+
+        //Create byte[] for plain text
+        byte[] plainBytes = msg.getBytes();
+
+        //Create byte[] for cipher text
+        byte[] cipher = new byte[plainBytes.length];
+
+        //Send Each byte of array to be encrypted and added to new array
+        for(int i = 0; i < plainBytes.length; i++)
+        {
+            cipher[i] = encryptByte(plainBytes[i]);
+        }
+
+        return cipher;
+    }
+
+    /**
+     * @author Dylan Chow
+     * Encrypt a single byte using SDES.
+     * @parameter b - a single byte of plain text
+     * @return an encrypted byte
+     */
+    public byte encryptByte(byte b)
+    {
+        key1 = expPerm(key, epv1);
+        key2 = expPerm(key, epv2);     
+        boolean [] x = getByteToBool(b);       
+        boolean [] ip = expPerm(x, ipPerm);
+        boolean [] fk1 = f(ip, key1);
+        boolean [] fk2 = f((concat(rh(fk1), lh(fk1))), key2);
+        boolean [] ipInverse = expPerm(fk2, ipInversePerm);
+
+        return getBoolToByte(ipInverse);
+    }
+
+    /**
+     * @author Dylan Chow
+     * Decrypt the byte given byte array
+     * @parameter cipher - an array of bytes representing the cipher text.
+     * @return An array of bytes representing the original plain text.
+     */
+    public byte[] decrypt(byte[] cipher)
+    {
+        // Returning array containing an array of bytes
+        byte[] plain = new byte[cipher.length];
+
+        for(int i = 0; i < cipher.length; i++)
+        {
+            plain[i] = decryptByte(cipher[i]);            
+        }
+
+        return plain;
+    }
+
+    /**
+     * @author Dylan Chow
+     * Decrypt a single byte using SDES
+     * @parameter b - a single byte of encrypted text
+     * @return a plain text byte
+     */
+    public byte decryptByte(byte b)
+    {
+        key1 = expPerm(key, epv1);
+        key2 = expPerm(key, epv2);     
+        boolean [] y = getByteToBool(b);   
+        boolean [] ip = expPerm(y, ipPerm);
+        boolean [] fk1 = f(ip, key1);
+        boolean [] fk2 = f((concat(rh(fk1), lh(fk1))), key2);
+        boolean [] ipInverse = expPerm(fk2, ipInversePerm);
+
+        return getBoolToByte(ipInverse);      
+    }
+
+    /** 
+     * @author Dylan Chow
+     * Send the array, inp, to stdout as 1's and 0's.
+     */
+    public void show(boolean [] inp)
+    {
+        for(int i = 0; i < 8;  i++)
+        {
+            if(inp[i] == true)
+                System.out.print(1);
+            else
+                System.out.print(0);
+        }
+    }
+
+    /**
+     * @author Dylan Chow
+     * Send the array, byteArray, to stdout.
+     */
+    public void show(byte [] byteArray)
+    {
+        System.out.print("[");
+
+        for(int i = 0; i < byteArray.length-1; i++)
+        {
+            System.out.print(byteArray[i] + " , ");
+        }
+
+        System.out.print(byteArray[byteArray.length-1] + "]");
+        System.out.println();
+    }
+
+    /** 
+     * @author Dylan Chow
+     * Given a byte, b, return a boolean array, bool, that represents that byte.
+     * @parameter b - byte
+     * @return bool - boolean array resulting from byte
+     */
+    private boolean[] getByteToBool(byte b)
+    {
+        BitSet bs = new BitSet(8);
+        boolean[] bool = new boolean[8];
+
+        for(int i = 0; i < 8; i++)
+        {
+            // Right bit shift
+            if(((b >> i) & 1) == 1)
+            {
+                bs.set(i);
+            }
+        }
+
+        for(int i = 0; i < 8; i++)
+        {
+            bool[i] = bs.get(i);
+        }
+
+        return bool;
+    }
+
+    /**
+     * @author Dylan Chow
+     * Given an array of boolean, bool, return a byte, b, that represents 
+     * the array of booleans.
+     * @parameter bool - array of booleans
+     * @return b - byte
+     */
+    private byte getBoolToByte(boolean[] bool)
+    {
+        int b = 0;
+
+        for(int i = 0; i < bool.length; i++)
+        {
+            if(bool[i] == true)
+                b = b + ((int) Math.pow(2, i));
+        }
+
+        return (byte) b;        
+    }
+
 }
     
     
